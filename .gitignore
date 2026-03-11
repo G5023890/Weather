@@ -1,0 +1,7 @@
+.DS_Store
+.build/
+DerivedData/
+Weather.xcodeproj/
+Config/Secrets.xcconfig
+.codex/
+dist/

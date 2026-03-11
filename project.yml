@@ -1,0 +1,65 @@
+name: Weather
+options:
+  bundleIdPrefix: com.grigorymordokhovich
+configs:
+  Debug: debug
+  Release: release
+settings:
+  base:
+    SWIFT_VERSION: 6.0
+    MACOSX_DEPLOYMENT_TARGET: "14.0"
+    CODE_SIGN_STYLE: Automatic
+    CURRENT_PROJECT_VERSION: 2
+    MARKETING_VERSION: 1.1
+targets:
+  WeatherCore:
+    type: framework
+    platform: macOS
+    sources:
+      - Sources/WeatherCore
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.grigorymordokhovich.weather.core
+        GENERATE_INFOPLIST_FILE: YES
+        DEFINES_MODULE: YES
+  Weather:
+    type: application
+    platform: macOS
+    sources:
+      - Sources/WeatherApp
+    dependencies:
+      - target: WeatherCore
+    info:
+      path: Sources/WeatherApp/Info.plist
+      properties:
+        LSUIElement: true
+        WEATHER_API_KEY: $(WEATHER_API_KEY)
+        WEATHER_QUERY: $(WEATHER_QUERY)
+    configFiles:
+      Debug: Config/Debug.xcconfig
+      Release: Config/Release.xcconfig
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.grigorymordokhovich.weather
+        PRODUCT_NAME: Weather
+        CODE_SIGN_ENTITLEMENTS: ""
+  WeatherTests:
+    type: bundle.unit-test
+    platform: macOS
+    sources:
+      - Tests/WeatherCoreTests
+    dependencies:
+      - target: WeatherCore
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.grigorymordokhovich.weather.tests
+schemes:
+  Weather:
+    build:
+      targets:
+        Weather: all
+        WeatherCore: all
+        WeatherTests: [test]
+    test:
+      targets:
+        - WeatherTests

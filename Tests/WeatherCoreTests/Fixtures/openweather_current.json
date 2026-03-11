@@ -1,0 +1,25 @@
+{
+  "coord": {
+    "lon": 34.885,
+    "lat": 32.0871
+  },
+  "weather": [
+    {
+      "id": 801,
+      "main": "Clouds",
+      "description": "few clouds",
+      "icon": "02d"
+    }
+  ],
+  "main": {
+    "temp": 21.1,
+    "feels_like": 22.4,
+    "temp_min": 20.2,
+    "temp_max": 21.7,
+    "pressure": 1014,
+    "humidity": 55
+  },
+  "dt": 1710069600,
+  "timezone": 7200,
+  "name": "Petah Tikva"
+}
