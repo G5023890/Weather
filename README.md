@@ -2,13 +2,7 @@
 
 macOS menu bar weather app built with `SwiftUI` and `OpenWeather`.
 
-![Weather popover screenshot](docs/weather-popover.png)
-
-# Weather
-
-macOS menu bar weather app built with `SwiftUI` and `OpenWeather`.
-
-<img src="docs/weather-popover.png" alt="Weather popover screenshot" width="50%">
+<img src="docs/weather-popover.png" alt="Weather popover screenshot" width="30%">
 ## Release
 
 - Current version: `1.1`
