@@ -31,6 +31,8 @@ For a stable local app bundle in `/Applications`:
 
 This flow regenerates the Xcode project when needed, builds the `Release` app with `xcodebuild`, copies it to `dist/Weather.app`, installs it to `/Applications/Weather.app`, and keeps the stable bundle identifier `com.grigorymordokhovich.weather`.
 
+The install script also imports `WEATHER_API_KEY` from `Config/Secrets.xcconfig` into the login Keychain, so the final `.app` bundle does not expose the API key in `Info.plist`.
+
 Useful overrides:
 
 ```bash

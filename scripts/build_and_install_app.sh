@@ -25,9 +25,33 @@ BUILD_APP_PATH=""
 APP_SLUG="$(printf '%s' "$APP_DISPLAY_NAME" | tr '[:upper:]' '[:lower:]')"
 
 BUILD_LOG="${BUILD_LOG:-/tmp/${APP_SLUG}-xcodebuild.log}"
+KEYCHAIN_SERVICE="${KEYCHAIN_SERVICE:-com.grigorymordokhovich.weather.openweather}"
+KEYCHAIN_ACCOUNT="${KEYCHAIN_ACCOUNT:-default}"
+SECRETS_FILE="${SECRETS_FILE:-$PROJECT_DIR/Config/Secrets.xcconfig}"
 
 log() {
   echo "[build] $*"
+}
+
+extract_api_key() {
+  if [[ -f "$SECRETS_FILE" ]]; then
+    awk -F= '/^[[:space:]]*WEATHER_API_KEY[[:space:]]*=/{gsub(/^[[:space:]]+|[[:space:]]+$/, "", $2); print $2; exit}' "$SECRETS_FILE"
+  fi
+}
+
+store_api_key_in_keychain() {
+  local api_key="$1"
+
+  if [[ -z "$api_key" ]]; then
+    return 0
+  fi
+
+  log "Storing OpenWeather API key in login Keychain"
+  security add-generic-password \
+    -U \
+    -a "$KEYCHAIN_ACCOUNT" \
+    -s "$KEYCHAIN_SERVICE" \
+    -w "$api_key" >/dev/null
 }
 
 activate_xcode() {
@@ -179,6 +203,7 @@ fi
 xattr -cr "$INSTALL_DIR" || true
 sign_bundle_if_needed "$INSTALL_DIR"
 verify_bundle_id "$INSTALL_DIR"
+store_api_key_in_keychain "$(extract_api_key)"
 
 log "Built: $APP_DIR"
 log "Installed: $INSTALL_DIR"

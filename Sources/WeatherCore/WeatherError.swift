@@ -10,7 +10,7 @@ public enum WeatherError: LocalizedError, Equatable {
     public var errorDescription: String? {
         switch self {
         case .missingAPIKey:
-            return "Missing OpenWeather API key. Add WEATHER_API_KEY to Config/Secrets.xcconfig."
+            return "Missing OpenWeather API key. Store it in Keychain before running the app."
         case .invalidResponse:
             return "Weather service returned an invalid response."
         case .noForecastData:

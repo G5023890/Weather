@@ -10,8 +10,7 @@ public struct AppConfiguration: Sendable {
     }
 
     public static func load(from bundle: Bundle = .main) -> AppConfiguration {
-        let apiKey = (bundle.object(forInfoDictionaryKey: "WEATHER_API_KEY") as? String)?
-            .trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
+        let apiKey = WeatherAPIKeyStore().read() ?? ""
         let locationQuery = (bundle.object(forInfoDictionaryKey: "WEATHER_QUERY") as? String)?
             .trimmingCharacters(in: .whitespacesAndNewlines)
             .nonEmpty ?? "Petah Tikva,IL"

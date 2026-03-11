@@ -33,7 +33,6 @@ targets:
       path: Sources/WeatherApp/Info.plist
       properties:
         LSUIElement: true
-        WEATHER_API_KEY: $(WEATHER_API_KEY)
         WEATHER_QUERY: $(WEATHER_QUERY)
     configFiles:
       Debug: Config/Debug.xcconfig
