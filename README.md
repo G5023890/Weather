@@ -2,6 +2,14 @@
 
 macOS menu bar weather app built with `SwiftUI` and `OpenWeather`.
 
+![Weather popover screenshot](docs/weather-popover.png)
+
+## Release
+
+- Current version: `1.1`
+- Latest snapshot tag: `v1.1`
+- Changelog: [CHANGELOG.md](/Users/grigorymordokhovich/Documents/Develop/Weather/CHANGELOG.md)
+
 ## Setup
 
 1. Copy [Config/Secrets.example.xcconfig](/Users/grigorymordokhovich/Documents/Develop/Weather/Config/Secrets.example.xcconfig) to `Config/Secrets.xcconfig`.
@@ -51,6 +59,15 @@ Optional overrides:
 ```bash
 APP_PATH="/Applications/Weather.app" ./scripts/run_app.sh
 LAST_WINDOW=10m STYLE=json ./scripts/open_logs.sh
+```
+
+Generate the repository screenshot:
+
+```bash
+mkdir -p /tmp/weather-screenshot-build
+DEVELOPER_DIR=/Applications/Xcode-beta.app/Contents/Developer xcrun swiftc -parse-as-library -emit-module -emit-object -module-name WeatherCore Sources/WeatherCore/WeatherModels.swift -o /tmp/weather-screenshot-build/WeatherCore.o -emit-module-path /tmp/weather-screenshot-build/WeatherCore.swiftmodule
+DEVELOPER_DIR=/Applications/Xcode-beta.app/Contents/Developer xcrun swiftc -I /tmp/weather-screenshot-build Sources/WeatherApp/WeatherMenuBarContentView.swift scripts/render_screenshot.swift /tmp/weather-screenshot-build/WeatherCore.o -o /tmp/weather-screenshot-build/render_weather_screenshot
+/tmp/weather-screenshot-build/render_weather_screenshot docs/weather-popover.png
 ```
 
 ## Notes
