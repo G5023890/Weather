@@ -28,7 +28,7 @@ public enum WeatherSnapshotBuilder {
         let hourlyItems = Array(upcomingItems.prefix(6))
         let selectedHourlyItems = hourlyItems.isEmpty ? Array(forecast.list.prefix(6)) : hourlyItems
 
-        let todayItems = forecast.list.filter {
+        let currentDayItems = forecast.list.filter {
             calendar.isDate(
                 Date(timeIntervalSince1970: TimeInterval($0.dt)),
                 equalTo: nowDate,
@@ -36,9 +36,9 @@ public enum WeatherSnapshotBuilder {
             )
         }
 
-        guard !todayItems.isEmpty else {
-            throw WeatherError.noForecastData
-        }
+        let referenceItems = currentDayItems.isEmpty
+            ? (upcomingItems.isEmpty ? Array(forecast.list.prefix(8)) : upcomingItems)
+            : currentDayItems
 
         let groupedDailyItems = Dictionary(grouping: forecast.list) {
             calendar.startOfDay(for: Date(timeIntervalSince1970: TimeInterval($0.dt)))
@@ -88,12 +88,12 @@ public enum WeatherSnapshotBuilder {
             )
         }
 
-        let humidityValues = todayItems.map(\.main.humidity)
+        let humidityValues = referenceItems.map(\.main.humidity)
         let currentConditions = CurrentConditionsDetails(
             conditionText: currentCondition.description.capitalized,
-            minTemperatureC: Int((todayItems.map(\.main.tempMin).min() ?? current.main.tempMin).rounded()),
-            maxTemperatureC: Int((todayItems.map(\.main.tempMax).max() ?? current.main.tempMax).rounded()),
-            chanceOfRain: Int(((todayItems.map(\.pop).max() ?? 0) * 100).rounded()),
+            minTemperatureC: Int((referenceItems.map(\.main.tempMin).min() ?? current.main.tempMin).rounded()),
+            maxTemperatureC: Int((referenceItems.map(\.main.tempMax).max() ?? current.main.tempMax).rounded()),
+            chanceOfRain: Int(((referenceItems.map(\.pop).max() ?? 0) * 100).rounded()),
             humidityMin: humidityValues.min() ?? current.main.humidity,
             humidityMax: humidityValues.max() ?? current.main.humidity,
             uvIndexMax: nil,

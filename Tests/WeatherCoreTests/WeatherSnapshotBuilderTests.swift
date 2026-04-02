@@ -39,6 +39,68 @@ final class WeatherSnapshotBuilderTests: XCTestCase {
         XCTAssertEqual(snapshot.currentConditions.pressureMMHg, 761)
     }
 
+    func testBuildsSnapshotWhenCurrentDayForecastIsMissing() throws {
+        let current = OpenWeatherCurrentResponse(
+            name: "Petah Tikva",
+            timezone: 10_800,
+            dt: 1_774_808_930,
+            weather: [
+                OpenWeatherCondition(
+                    id: 801,
+                    main: "Clouds",
+                    description: "few clouds",
+                    icon: "02d"
+                )
+            ],
+            main: OpenWeatherMain(
+                temp: 14.3,
+                feelsLike: 13.8,
+                tempMin: 12.7,
+                tempMax: 15.0,
+                pressure: 1012,
+                humidity: 74
+            )
+        )
+
+        let forecast = OpenWeatherForecastResponse(
+            list: [
+                OpenWeatherForecastItem(
+                    dt: 1_774_818_000,
+                    pop: 0.0,
+                    weather: [
+                        OpenWeatherCondition(
+                            id: 800,
+                            main: "Clear",
+                            description: "clear sky",
+                            icon: "01n"
+                        )
+                    ],
+                    main: OpenWeatherMain(
+                        temp: 13.9,
+                        feelsLike: 13.3,
+                        tempMin: 13.1,
+                        tempMax: 13.9,
+                        pressure: 1011,
+                        humidity: 73
+                    )
+                )
+            ],
+            city: OpenWeatherCity(name: "Petah Tikva", timezone: 10_800)
+        )
+
+        let snapshot = try WeatherSnapshotBuilder.build(
+            current: current,
+            forecast: forecast,
+            fetchedAt: .distantPast
+        )
+
+        XCTAssertEqual(snapshot.locationName, "Petah Tikva")
+        XCTAssertEqual(snapshot.hourlyForecast.count, 1)
+        XCTAssertEqual(snapshot.dailyForecast.count, 1)
+        XCTAssertEqual(snapshot.currentConditions.minTemperatureC, 13)
+        XCTAssertEqual(snapshot.currentConditions.maxTemperatureC, 14)
+    }
+
     func testMapsCommonOpenWeatherCodesToSymbols() {
         XCTAssertEqual(ConditionSymbolMapper.symbolName(for: 800, iconCode: "01d"), "sun.max.fill")
         XCTAssertEqual(ConditionSymbolMapper.symbolName(for: 800, iconCode: "01n"), "moon.stars.fill")
