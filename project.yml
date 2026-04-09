@@ -9,8 +9,8 @@ settings:
     SWIFT_VERSION: 6.0
     MACOSX_DEPLOYMENT_TARGET: "14.0"
     CODE_SIGN_STYLE: Automatic
-    CURRENT_PROJECT_VERSION: 2
-    MARKETING_VERSION: 1.1
+    CURRENT_PROJECT_VERSION: 3
+    MARKETING_VERSION: 1.1.1
 targets:
   WeatherCore:
     type: framework
@@ -33,7 +33,7 @@ targets:
       path: Sources/WeatherApp/Info.plist
       properties:
         LSUIElement: true
-        WEATHER_QUERY: $(WEATHER_QUERY)
+        NSLocationWhenInUseUsageDescription: "Weather uses your current location to show the most accurate forecast for your city."
     configFiles:
       Debug: Config/Debug.xcconfig
       Release: Config/Release.xcconfig
@@ -52,6 +52,19 @@ targets:
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.grigorymordokhovich.weather.tests
+        GENERATE_INFOPLIST_FILE: YES
+  WeatherAppTests:
+    type: bundle.unit-test
+    platform: macOS
+    sources:
+      - Tests/WeatherAppTests
+    dependencies:
+      - target: Weather
+      - target: WeatherCore
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.grigorymordokhovich.weather.app.tests
+        GENERATE_INFOPLIST_FILE: YES
 schemes:
   Weather:
     build:
@@ -59,6 +72,8 @@ schemes:
         Weather: all
         WeatherCore: all
         WeatherTests: [test]
+        WeatherAppTests: [test]
     test:
       targets:
         - WeatherTests
+        - WeatherAppTests

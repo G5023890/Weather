@@ -6,7 +6,8 @@ public enum WeatherSnapshotBuilder {
     public static func build(
         current: OpenWeatherCurrentResponse,
         forecast: OpenWeatherForecastResponse,
-        fetchedAt: Date = Date()
+        fetchedAt: Date = Date(),
+        locationName: String? = nil
     ) throws -> WeatherSnapshot {
         guard !forecast.list.isEmpty else {
             throw WeatherError.noForecastData
@@ -102,7 +103,7 @@ public enum WeatherSnapshotBuilder {
         )
 
         return WeatherSnapshot(
-            locationName: current.name,
+            locationName: locationName?.trimmingCharacters(in: .whitespacesAndNewlines).nonEmpty ?? current.name,
             status: status,
             hourlyForecast: hourlyForecast,
             dailyForecast: dailyForecast,
@@ -124,5 +125,11 @@ public enum WeatherSnapshotBuilder {
 
     private static func representativeTempMax(in items: [OpenWeatherForecastItem]) -> Double {
         items.first?.main.tempMax ?? 0
+    }
+}
+
+private extension String {
+    var nonEmpty: String? {
+        isEmpty ? nil : self
     }
 }

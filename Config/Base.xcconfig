@@ -1,4 +1,3 @@
 WEATHER_API_KEY =
-WEATHER_QUERY = Petah Tikva,IL
 
 #include? "Secrets.xcconfig"

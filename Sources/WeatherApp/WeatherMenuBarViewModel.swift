@@ -8,16 +8,36 @@ final class WeatherMenuBarViewModel: ObservableObject {
     @Published private(set) var isLoading = false
     @Published private(set) var errorMessage: String?
     @Published private(set) var lastUpdated: Date?
+    @Published private(set) var locationName: String?
 
-    private let service: any WeatherServing
+    private let apiKey: String
+    private let locationProvider: any WeatherLocationProviding
+    private let weatherServiceFactory: (ResolvedWeatherLocation) -> any WeatherServing
     private let nowProvider: () -> Date
     private var refreshTask: Task<Void, Never>?
     private var hasStarted = false
+    private var resolvedLocation: ResolvedWeatherLocation?
 
-    init(service: any WeatherServing, nowProvider: @escaping () -> Date = Date.init) {
-        self.service = service
+    init(
+        apiKey: String,
+        locationProvider: any WeatherLocationProviding = SystemWeatherLocationProvider(),
+        weatherServiceFactory: ((ResolvedWeatherLocation) -> any WeatherServing)? = nil,
+        nowProvider: @escaping () -> Date = Date.init,
+        autoStart: Bool = true
+    ) {
+        self.apiKey = apiKey
+        self.locationProvider = locationProvider
+        self.weatherServiceFactory = weatherServiceFactory ?? { location in
+            OpenWeatherService(
+                apiKey: apiKey,
+                latitude: location.latitude,
+                longitude: location.longitude
+            )
+        }
         self.nowProvider = nowProvider
-        startIfNeeded()
+        if autoStart {
+            startIfNeeded()
+        }
     }
 
     deinit {
@@ -26,11 +46,7 @@ final class WeatherMenuBarViewModel: ObservableObject {
 
     static func live() -> WeatherMenuBarViewModel {
         let configuration = AppConfiguration.load()
-        let service = OpenWeatherService(
-            apiKey: configuration.apiKey,
-            locationQuery: configuration.locationQuery
-        )
-        return WeatherMenuBarViewModel(service: service)
+        return WeatherMenuBarViewModel(apiKey: configuration.apiKey)
     }
 
     var menuBarSymbolName: String {
@@ -75,15 +91,30 @@ final class WeatherMenuBarViewModel: ObservableObject {
         }
 
         isLoading = true
+        errorMessage = nil
         defer { isLoading = false }
 
         do {
-            let snapshot = try await service.fetchWeather()
+            let resolvedLocation = try await resolveLocationIfNeeded()
+            let service = weatherServiceFactory(resolvedLocation)
+            let snapshot = try await service.fetchWeather(displayLocationName: resolvedLocation.displayName)
             self.snapshot = snapshot
+            locationName = resolvedLocation.displayName
             lastUpdated = nowProvider()
             errorMessage = nil
         } catch {
             errorMessage = error.localizedDescription
         }
+    }
+
+    private func resolveLocationIfNeeded() async throws -> ResolvedWeatherLocation {
+        if let resolvedLocation {
+            return resolvedLocation
+        }
+
+        let location = try await locationProvider.resolveCurrentLocation()
+        resolvedLocation = location
+        locationName = location.displayName
+        return location
     }
 }

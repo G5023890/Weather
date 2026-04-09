@@ -3,11 +3,17 @@
 macOS menu bar weather app built with `SwiftUI` and `OpenWeather`.
 
 <img src="docs/weather-popover.png" alt="Weather popover screenshot" width="30%">
-## Release
+## Versioning
 
-- Current version: `1.1`
-- Latest snapshot tag: `v1.1`
+- Current version: `1.1.1`
+- Latest snapshot tag: `snapshot/v1.1-2026-04-09-0757`
 - Changelog: [CHANGELOG.md](/Users/grigorymordokhovich/Documents/Develop/Weather/CHANGELOG.md)
+
+## Recent changes
+
+- Weather now resolves from the user's current macOS location instead of a fixed city.
+- The app reverse geocodes the location to show a readable city name in the menu bar.
+- Added app tests for the location-aware view model flow and coordinate-based OpenWeather URLs.
 
 ## Setup
 
@@ -74,5 +80,5 @@ DEVELOPER_DIR=/Applications/Xcode-beta.app/Contents/Developer xcrun swiftc -I /t
 ## Notes
 
 - The app is `menu bar only` via `LSUIElement`.
-- Fixed location is `Petah Tikva`.
+- The app uses your current location on startup and needs macOS location permission.
 - Core parsing and snapshot shaping are covered by `swift test`.

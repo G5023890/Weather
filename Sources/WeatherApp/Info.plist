@@ -15,12 +15,12 @@
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
-	<string>$(MARKETING_VERSION)</string>
+	<string>1.0</string>
 	<key>CFBundleVersion</key>
-	<string>$(CURRENT_PROJECT_VERSION)</string>
+	<string>1</string>
 	<key>LSUIElement</key>
 	<true/>
-	<key>WEATHER_QUERY</key>
-	<string>$(WEATHER_QUERY)</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>Weather uses your current location to show the most accurate forecast for your city.</string>
 </dict>
 </plist>

@@ -133,11 +133,11 @@ struct WeatherMenuBarContentView: View {
             GlassTintBackground()
 
             VStack(alignment: .leading, spacing: 10) {
-                Text("Petah Tikva")
+                Text(viewModel.locationName ?? "Determining location")
                     .font(.system(size: 15, weight: .semibold, design: .rounded))
                     .foregroundStyle(Glass.valuePri)
 
-                Text(viewModel.isLoading ? "Loading weather…" : "Waiting for first successful update")
+                Text(viewModel.isLoading ? "Loading weather for your current city…" : "Waiting for location")
                     .font(.system(size: 11, weight: .medium, design: .rounded))
                     .foregroundStyle(Glass.labelSec)
 

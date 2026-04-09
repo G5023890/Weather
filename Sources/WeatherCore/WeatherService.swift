@@ -1,31 +1,34 @@
 import Foundation
 
 public protocol WeatherServing: Sendable {
-    func fetchWeather() async throws -> WeatherSnapshot
+    func fetchWeather(displayLocationName: String?) async throws -> WeatherSnapshot
 }
 
-public final class OpenWeatherService: WeatherServing {
+public final class OpenWeatherService: WeatherServing, @unchecked Sendable {
     private let apiKey: String
-    private let locationQuery: String
+    private let latitude: Double
+    private let longitude: Double
     private let session: URLSession
     private let decoder: JSONDecoder
     private let baseURL: URL
 
     public init(
         apiKey: String,
-        locationQuery: String,
+        latitude: Double,
+        longitude: Double,
         session: URLSession = .shared,
         decoder: JSONDecoder = JSONDecoder(),
         baseURL: URL = URL(string: "https://api.openweathermap.org")!
     ) {
         self.apiKey = apiKey
-        self.locationQuery = locationQuery
+        self.latitude = latitude
+        self.longitude = longitude
         self.session = session
         self.decoder = decoder
         self.baseURL = baseURL
     }
 
-    public func fetchWeather() async throws -> WeatherSnapshot {
+    public func fetchWeather(displayLocationName: String?) async throws -> WeatherSnapshot {
         guard !apiKey.isEmpty else {
             throw WeatherError.missingAPIKey
         }
@@ -36,7 +39,8 @@ public final class OpenWeatherService: WeatherServing {
         return try WeatherSnapshotBuilder.build(
             current: try await current,
             forecast: try await forecast,
-            fetchedAt: Date()
+            fetchedAt: Date(),
+            locationName: displayLocationName
         )
     }
 
@@ -55,7 +59,8 @@ public final class OpenWeatherService: WeatherServing {
         )
         components?.queryItems = [
             URLQueryItem(name: "appid", value: apiKey),
-            URLQueryItem(name: "q", value: locationQuery),
+            URLQueryItem(name: "lat", value: String(latitude)),
+            URLQueryItem(name: "lon", value: String(longitude)),
             URLQueryItem(name: "units", value: "metric")
         ]
         return components?.url

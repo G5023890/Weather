@@ -112,7 +112,7 @@ final class WeatherSnapshotBuilderTests: XCTestCase {
     }
 
     private func fixture(named name: String) throws -> Data {
-        guard let url = Bundle.module.url(forResource: name, withExtension: "json") else {
+        guard let url = Bundle(for: Self.self).url(forResource: name, withExtension: "json") else {
             throw CocoaError(.fileNoSuchFile)
         }
 
